@@ -150,8 +150,7 @@ class Vertex {
         cout << "[";
         for (auto it = edgeList.begin(); it != edgeList.end(); it++) {
             cout << it->getDestinationVertexID() << " - "
-                 << it->getName() << "(" << it->getWeight() << "("
-                 << it->getExra0() << ", " << it->getExtra1() << ") --> ";
+                 << it->getName() << " (" << it->getWeight() << ") --> ";
         }
         cout << "]";
         cout << endl;
