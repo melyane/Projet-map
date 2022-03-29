@@ -10,6 +10,7 @@
 #include <string>
 #include <algorithm>
 #include <sstream>
+#include <cmath>
 
 using namespace std;
 
@@ -134,6 +135,19 @@ class Vertex {
         y = yd;
     }
 
+    void setX(double lon, int width) {
+        // width is map width
+        x = fmod((width*(180+lon)/360), (width +(width/2)));
+    }
+    void setY(double lat, int height, int width) {
+        // height and width are map height and width
+        double PI = 3.14159265359;
+        double latRad = lat*PI/180;
+        // get y value
+        double mercN = log(tan((PI/4)+(latRad/2)));
+        y = (height/2)-(width*mercN/(2*PI));
+    }
+
     // edge functions
     list < Edge > getEdgeList() {
         return edgeList;
@@ -161,7 +175,7 @@ class Vertex {
         latitude = la;
         x = xd;
         y = yd;
-        cout << "Vertex Name Updated Successfully";
+        //cout << "Vertex Name Updated Successfully";
     }
 
 };
@@ -188,7 +202,7 @@ class Graph {
             cout << "Vertex with this ID already exist" << endl;
         } else {
             vertices.push_back(newVertex);
-            cout << "New Vertex Added Successfully" << endl;
+            //cout << "New Vertex Added Successfully" << endl;
         }
     }
 
@@ -230,7 +244,7 @@ class Graph {
                     break;
                 }
             }
-        cout << "Vertex(State) Updated Successfully " << endl;
+        //cout << "Vertex(State) Updated Successfully " << endl;
         }
     }
 
@@ -250,7 +264,7 @@ class Graph {
                         vertices.at(i).edgeList.push_back(e);
                     }
                 }
-                cout << "Edge between " << fromVertex << " and " << toVertex << " added Successfully" << endl;
+                //cout << "Edge between " << fromVertex << " and " << toVertex << " added Successfully" << endl;
             }
         } else {
             cout << "Invalid Vertex ID entered.";
@@ -273,7 +287,7 @@ class Graph {
                     }
                 }
             }
-            cout << "Edge Weight Updated Successfully " << endl;
+            //cout << "Edge Weight Updated Successfully " << endl;
         } else {
             cout << "Edge between id" << fromVertex << " and id" << toVertex << " DOES NOT Exist" << endl;
         }
@@ -292,7 +306,7 @@ class Graph {
                     }
                 }
             }
-            cout << "Edge Between " << fromVertex << " and " << toVertex << " Deleted Successfully." << endl;
+            //cout << "Edge Between " << fromVertex << " and " << toVertex << " Deleted Successfully." << endl;
         } else {
             cout << "Edge between id" << fromVertex << " and id" << toVertex << " DOES NOT Exist" << endl;
         }
@@ -314,7 +328,7 @@ class Graph {
             }
         }
         vertices.erase(vertices.begin() + vIndex);
-        cout << "Vertex Deleted Successfully" << endl;
+        //cout << "Vertex Deleted Successfully" << endl;
     }
 
     void getAllNeigborsByID(int vid) {
@@ -339,7 +353,7 @@ class Graph {
         }
     }
 
-    Graph(string fname) {
+    Graph(string fname, int height=100, int width=100) {
         string line, word;
         vector<string> row;
         ifstream name;
@@ -355,7 +369,7 @@ class Graph {
             // read new line
             getline(name, line);
             if (name.eof()) break;
-            cout << "DEBUG_0 : " << line << endl;
+            //cout << "DEBUG_0 : " << line << endl;
             // clean buffer
             row.clear();
             // new vertex data
@@ -365,12 +379,16 @@ class Graph {
                     row.push_back(word);
                 }
                 id1 = atoi(row[1].c_str());
-                lo = atoi(row[1].c_str());
-                la = atof(row[2].c_str());
-                if (row[3] == "") { xd = 0; } else { xd = atof(row[3].c_str()); }
-                if (row[4] == "") { yd = 0; } else { yd = atof(row[4].c_str()); }
+                lo = atof(row[2].c_str());
+                la = atof(row[3].c_str());
+                if (row[4] == "") { xd = 0; } else { xd = atof(row[4].c_str()); }
+                if (row[5] == "") { yd = 0; } else { yd = atof(row[5].c_str()); }
                 // add new vertex in graph
+                //cout << "DEBUG_1 : V," << id1 << "," << lo << "," << la << "," << xd << "," << yd << endl;
                 Vertex e(id1, lo, la, xd, yd);
+                e.setX(lo, width);
+                e.setY(la, height, width);
+                cout << "x=" << e.getX() << " y=" << e.getY() << endl;
                 addVertex(e);
             }
             // new edge data
@@ -386,10 +404,13 @@ class Graph {
                 e0 = row[5] ;
                 e1 = row[6] ;
                 // add new edge in graph
+                //cout << "DEBUG_1 : E," << id1 << "," << id2 << "," << w << "," << n << "," << e0 << "," << e1 << endl;
                 addEdgeByID(id1, id2, w, n, e0, e1);
             }
         }
     }
+
+
 
 };
 
