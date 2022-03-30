@@ -22,11 +22,15 @@ int main(int argc, char *argv[])
 
     auto end = std::chrono::steady_clock::now();
     std::chrono::duration<double> elapsed_seconds = end-start;
-    cout << "elapsed time: " << elapsed_seconds.count() << " sec" << endl;
+    cout << "CACHE - elapsed time: " << elapsed_seconds.count() << " sec" << endl;
 
     // QT display
+    start = std::chrono::steady_clock::now();
     QApplication a(argc, argv);
-    MainWindow w;
+    MainWindow w(graph);
+    end = std::chrono::steady_clock::now();
+    elapsed_seconds = end-start;
+    cout << "PAINT - elapsed time: " << elapsed_seconds.count() << " sec" << endl;
     w.show();
     return a.exec();
 }

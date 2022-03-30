@@ -1,21 +1,28 @@
+
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 
-#include <QMainWindow>
+#include <QWidget>
+#include "graph.h"
 
 QT_BEGIN_NAMESPACE
-namespace Ui { class MainWindow; }
+class QGraphicsScene;
+class QSplitter;
 QT_END_NAMESPACE
 
-class MainWindow : public QMainWindow
+class MainWindow : public QWidget
 {
     Q_OBJECT
-
 public:
-    MainWindow(QWidget *parent = nullptr);
-    ~MainWindow();
+    MainWindow(Graph g, QWidget *parent = nullptr);
 
 private:
-    Ui::MainWindow *ui;
+    void setupMatrix();
+    void populateScene(Graph g);
+
+    QGraphicsScene *scene;
+    QSplitter *h1Splitter;
+    QSplitter *h2Splitter;
 };
+
 #endif // MAINWINDOW_H
