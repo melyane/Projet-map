@@ -12,7 +12,6 @@
 #include <sstream>
 #include <cmath>
 #include <iomanip>
-#include <utility>
 
 using namespace std;
 
@@ -191,6 +190,7 @@ class Vertex {
         //cout << "Vertex Name Updated Successfully";
     }
 
+
 };
 
 class Graph {
@@ -289,7 +289,32 @@ class Graph {
        return cpt;
     }
 
+    void set_all_vertex_weight_to_max_value() {
+        vector<int> V1list = getVertexIdList();
+        list<Edge> le;
+        double x1, x2, y1, y2;
+        int v2;
+        for (auto v1 = std::begin(V1list); v1 != std::end(V1list); ++v1) {
+            le = getVertexByID(*v1).getEdgeList();
+            for (auto ite = std::begin(le); ite != std::end(le); ++ite) {
+                v2 = ite->getDestinationVertexID();
+                x1 = getVertexByID(*v1).getX();
+                y1 = getVertexByID(*v1).getY();
+                x2 = getVertexByID(v2).getX();
+                y2 = getVertexByID(v2).getX();
+                ite->setWeight(sqrt(pow(x1 - x2, 2) + pow(y1 - y2, 2)));
+            }
+        }
+    }
+
     public:
+
+    Graph(string fname) {
+        int cptV, cptE;
+        cptV = readVertex(fname);
+        cptE = readEdge(fname);
+        cout << "nb de Vertex : " << cptV << " et nb de Edges : " << cptE << endl;
+    }
 
     vector<int> getVertexIdList() {
         vector<int> Vlist;
@@ -467,12 +492,6 @@ class Graph {
         }
     }
 
-    Graph(string fname) {
-        int cptV, cptE;
-        cptV = readVertex(fname);
-        cptE = readEdge(fname);
-        cout << "nb de Vertex : " << cptV << " et nb de Edges : " << cptE << endl;
-    }
 
     void create_log (int cpt, list <int> le) {
         double length = 0.0;
@@ -496,8 +515,6 @@ class Graph {
         // ID of the start vertex
         active_queue.push_back(vstart);
         do {
-            // from the current vertex in the front of the queue
-            // compute all vertices reachable in 1 step
             vcurrent =  active_queue.front();
             active_queue.pop_front();
             closed_set.push_front(vcurrent);
@@ -528,11 +545,70 @@ class Graph {
         return active_queue;
     }
 
-/*
     // Dijkstra algorithm
     list<int> Dijkstra(int vstart, int vstop) {
+        // reset weight values
+        set_all_vertex_weight_to_max_value();
+        // initialize
+        list<int> active_queue, closed_set, temp_list;
+        int vcurrent, vnext;
+        // ID of the start vertex
+        active_queue.push_back(vstart);
+        do {
+            vcurrent =  active_queue.front();
+            active_queue.pop_front();
+            closed_set.push_front(vcurrent);
+            // list of edges in current vertex
+            getVertexByID(vcurrent).getEdgesIdList(temp_list);
+            for (auto it = std::begin(temp_list); it != std::end(temp_list); ++it) {
+                vnext = *it;
+                if (vnext == vstop) {
+                    active_queue.push_back(vnext);
+                    return active_queue;
+                }
+            }
+            for (auto it = std::begin(temp_list); it != std::end(temp_list); ++it) {
+                vnext = *it;
+                // if exists in closed_set
+                if ((std::find(closed_set.begin(), closed_set.end(), vnext) != closed_set.end())) {
+                    continue;
+                }
+                // if does not exist in active_queue
+                if ((std::find(active_queue.begin(), active_queue.end(), vnext) == active_queue.end())) {
+                    active_queue.push_back(vnext);
+                }
+            }
+        } while(active_queue.size()!=0);
 
-    }*/
+    /*
+         set_all_vertex_weight_to_max_value(); ???
+
+        do {
+         auto vcurrent = active_queue.pop_front();
+
+         if (vcurrent == vend) break;
+         closed_set.add(vcurrent);
+
+         for(vnext in adjacency list of vcurrent) {
+         if (vnext is in closed_set) {
+            continue;
+         }
+         auto w = vcurrent.get_weight() + get_edge_w(vcurrent, vnext);
+         if (vnext is not already in active_queue) {
+            vnext.set_weight(w);
+            active_queue.push_end(vnext);
+         } else if (w < vnext.get_weight()) {
+            vnext.set_weight(w);
+         }
+         }
+         // the partial sort ensure that the vertex with the smallest w
+         // is the first on the active_queue
+         active_queue.partial_sort();
+         } while (active_queue.size() != 0)
+        }
+    */
+
+    }
 
 };
 
