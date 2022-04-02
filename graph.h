@@ -184,6 +184,91 @@ class Graph {
 
     vector < Vertex > vertices;
 
+    protected:
+
+    int readVertex(string fname, int height=1, int width=1) {
+        string line, word;
+        vector<string> row;
+        ifstream name;
+        name.open(fname);
+        if (!name.is_open()) {
+            cout << "Error : cannot open the file " << fname << endl;
+            exit(EXIT_FAILURE);
+        }
+        int id1, cpt=0 ;
+        double lo, la ;
+        string n, e0, e1;
+        while (true) {
+            // read new line
+            getline(name, line);
+            if (name.eof()) break;
+            //cout << "DEBUG_0 : " << line << endl;
+            // clean buffer
+            row.clear();
+            // new vertex data
+            if (line.front()=='V') {
+                stringstream str(line);
+                while(getline(str, word, ',')) {
+                    row.push_back(word);
+                }
+                row.push_back("");
+                id1 = atoi(row[1].c_str());
+                lo = atof(row[2].c_str());
+                la = atof(row[3].c_str());
+                // add new vertex in graph
+                //cout << "DEBUG_1 : V," << id1 << "," << lo << "," << la << "," << endl;
+                Vertex e(id1, lo, la);
+                e.setX(lo, width);
+                e.setY(la, height, width);
+                //cout << "x=" << e.getX() << " y=" << e.getY() << endl;
+                addVertex(e);
+                cpt++;
+            }
+        }
+       return cpt;
+    }
+
+    int readEdge(string fname) {
+        string line, word;
+        vector<string> row;
+        ifstream name;
+        name.open(fname);
+        if (!name.is_open()) {
+            cout << "Error : cannot open the file " << fname << endl;
+            exit(EXIT_FAILURE);
+        }
+        int id1, id2, cpt=0 ;
+        double w ;
+        string n, e0, e1;
+        while (true) {
+            // read new line
+            getline(name, line);
+            if (name.eof()) break;
+            //cout << "DEBUG_0 : " << line << endl;
+            // clean buffer
+            row.clear();
+            // new edge data
+            if (line.front()=='E') {
+                stringstream str(line);
+                while(getline(str, word, ',')) {
+                    row.push_back(word);
+                }
+                row.push_back("");
+                id1 = atoi(row[1].c_str()) ;
+                id2 = atoi(row[2].c_str()) ;
+                w = atof(row[3].c_str()) ;
+                n = row[4] ;
+                e0 = row[5] ;
+                e1 = row[6] ;
+                // add new edge in graph
+                //cout << "DEBUG_1 : E," << id1 << "," << id2 << "," << w << "," << n << "," << e0 << "," << e1 << endl;
+                addEdgeByID(id1, id2, w, n, e0, e1);
+                cpt++;
+            }
+        }
+       return cpt;
+    }
+
     public:
 
     vector<int> getVertexIdList() {
@@ -362,71 +447,13 @@ class Graph {
         }
     }
 
-    Graph(string fname, int height=10000000, int width=10000000) {
-        string line, word;
-        vector<string> row;
-        ifstream name;
-        name.open(fname);
-        if (!name.is_open()) {
-            cout << "Error : cannot open the file " << fname << endl;
-            exit(EXIT_FAILURE);
-        }
-        int id1, id2, cpt=0 ;
-        //double lo, la, xd, yd, w ;
-        double lo, la, w ;
-        string n, e0, e1;
-        while (true) {
-            // read new line
-            getline(name, line);
-            if (name.eof()) break;
-            //cout << "DEBUG_0 : " << line << endl;
-            // clean buffer
-            row.clear();
-            // new vertex data
-            if (line.front()=='V') {
-                stringstream str(line);
-                while(getline(str, word, ',')) {
-                    row.push_back(word);
-                }
-                id1 = atoi(row[1].c_str());
-                lo = atof(row[2].c_str());
-                la = atof(row[3].c_str());
-                //if (row[4] == "") { xd = 0; } else { xd = atof(row[4].c_str()); }
-                //if (row[5] == "") { yd = 0; } else { yd = atof(row[5].c_str()); }
-                // add new vertex in graph
-                //cout << "DEBUG_1 : V," << id1 << "," << lo << "," << la << "," << xd << "," << yd << endl;
-                //Vertex e(id1, lo, la, xd, yd);
-                Vertex e(id1, lo, la);
-                e.setX(lo, width);
-                e.setY(la, height, width);
-                //cout << "x=" << e.getX() << " y=" << e.getY() << endl;
-                addVertex(e);
-            }
-            // new edge data
-            if (line.front()=='E') {
-                cpt++;
-                stringstream str(line);
-                while(getline(str, word, ',')) {
-                    row.push_back(word);
-                }
-                id1 = atoi(row[1].c_str()) ;
-                id2 = atoi(row[2].c_str()) ;
-                w = atof(row[3].c_str()) ;
-                n = row[4] ;
-                //e0 = row[5] ;
-                //e1 = row[6] ;
-                // add new edge in graph
-                //cout << "DEBUG_1 : E," << id1 << "," << id2 << "," << w << "," << n << "," << e0 << "," << e1 << endl;
-                //addEdgeByID(id1, id2, w, n, e0, e1);
-                addEdgeByID(id1, id2, w, n);
-            }
-        }
-        cout << cpt << endl;
+    Graph(string fname) {
+        int cptV, cptE;
+        cptV = readVertex(fname);
+        cptE = readEdge(fname);
+        cout << "nb de Vertex : " << cptV << " et nb de Edges : " << cptE << endl;
     }
 
-
-
 };
-
 
 #endif // GRAPH_H
