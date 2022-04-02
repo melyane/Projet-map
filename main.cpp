@@ -14,6 +14,7 @@ void test_bfs(Graph graph, int vstart, int vstop) {
     for (int i: path) {
         std::cout << i << " => ";
     }
+    std::cout << std::endl;
 }
 
 int main(int argc, char *argv[])
