@@ -46,15 +46,6 @@ int main(int argc, char *argv[])
     end = std::chrono::steady_clock::now();
     elapsed_seconds = end - start;
     std::cout << "BFS - elapsed time: " << elapsed_seconds.count() << " sec" << std::endl << std::endl;
-    // custom BFS test
-    start = std::chrono::steady_clock::now();
-    test_bfs(graph, 10, 32);
-    test_bfs(graph, 500, 1534);
-    test_bfs(graph, 5152, 256);
-    test_bfs(graph, 53, 9);
-    end = std::chrono::steady_clock::now();
-    elapsed_seconds = end - start;
-    std::cout << "BFS - elapsed time: " << elapsed_seconds.count() << " sec" << std::endl << std::endl;
 
     // QT display
     start = std::chrono::steady_clock::now();
