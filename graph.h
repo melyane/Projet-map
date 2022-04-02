@@ -186,7 +186,7 @@ class Graph {
 
     protected:
 
-    int readVertex(string fname, int height=1, int width=1) {
+    int readVertex(string fname, int height=10000000, int width=10000000) {
         string line, word;
         vector<string> row;
         ifstream name;

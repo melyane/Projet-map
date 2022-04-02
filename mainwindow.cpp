@@ -13,7 +13,7 @@ MainWindow::MainWindow(Graph g, QWidget *parent)
     QSplitter *vSplitter = new QSplitter;
     vSplitter->setOrientation(Qt::Vertical);
     vSplitter->addWidget(h1Splitter);
-    //vSplitter->addWidget(h2Splitter);
+    vSplitter->addWidget(h2Splitter);
 
     View *view = new View("Map");
     view->view()->setScene(scene);
@@ -59,8 +59,9 @@ void MainWindow::populateScene(Graph g)
         list <Edge> EdgeList = ve.getEdgeList();
         for (auto it = EdgeList.begin(); it != EdgeList.end(); it++) {
             vto = g.getVertexByID(it->getDestinationVertexID());
-            QLineF line_temp(ve.getX(),ve.getY(),vto.getX(),vto.getY());
-            scene->addLine(line_temp);
+            //QLineF line_temp(ve.getX(),ve.getY(),vto.getX(),vto.getY());
+            //scene->addLine(line_temp);
+            scene->addLine(QLineF(ve.getX(),ve.getY(),vto.getX(),vto.getY()));
             cpte++;
         }
     }
