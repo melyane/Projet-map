@@ -456,10 +456,22 @@ class Graph {
         cout << "nb de Vertex : " << cptV << " et nb de Edges : " << cptE << endl;
     }
 
+    void create_log (int cpt, list <int> le) {
+        double length = 0.0;
+        cout << "Total visited vertex = " << cpt << endl;
+        cout << "Total vertex on path from start to end = " << le.size() << endl;
+        for (auto it = std::begin(le); it != std::end(le); ++it) {
+            vnext = *it;
+            cout << "Vertex [" << id+1 << "] = " << le[id] << ", length = " << length << endl;
+            length += getVertexByID(id).getWeightbyId(id+1);
+        }
+    }
+
     // BFS algorithm
     list<int> BFS(int vstart, int vstop) {
         // initialize
         list<int> active_queue, closed_set, temp_list;
+        int cpt=0;
         int vcurrent, vnext;
         // ID of the start vertex
         active_queue.push_back(vstart);
@@ -473,6 +485,7 @@ class Graph {
             getVertexByID(vcurrent).getEdgesIdList(temp_list);
             for (auto it = std::begin(temp_list); it != std::end(temp_list); ++it) {
                 vnext = *it;
+                ++cpt;
                 if (vnext == vstop) {
                     active_queue.push_back(vnext);
                     return active_queue;
@@ -489,7 +502,6 @@ class Graph {
         } while (active_queue.size()!=0);
         return active_queue;
     }
-
 };
 
 #endif // GRAPH_H
