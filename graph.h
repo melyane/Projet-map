@@ -164,6 +164,15 @@ class Vertex {
         cout << endl;
     }
 
+    double getWeightbyId(int id) {
+        for (auto it = edgeList.begin(); it != edgeList.end(); it++) {
+            if (it->getDestinationVertexID() == id) {
+                return it->getWeight();
+            }
+        }
+        return 0;
+    }
+
     list<int> getEdgesIdList(list<int> &le) {
         le.clear();
         for (auto it = edgeList.begin(); it != edgeList.end(); it++) {
@@ -240,8 +249,9 @@ class Graph {
             exit(EXIT_FAILURE);
         }
         int id1, id2, cpt=0 ;
-        double w ;
-        string n, e0, e1;
+        double w, x1, x2, y1, y2 ;
+        //string n, e0, e1;
+        string n;
         while (true) {
             // read new line
             getline(name, line);
@@ -258,13 +268,19 @@ class Graph {
                 row.push_back("");
                 id1 = atoi(row[1].c_str()) ;
                 id2 = atoi(row[2].c_str()) ;
-                w = atof(row[3].c_str()) ;
+                //w = atof(row[3].c_str()) ;
                 n = row[4] ;
-                e0 = row[5] ;
-                e1 = row[6] ;
+                //e0 = row[5] ;
+                //e1 = row[6] ;
                 // add new edge in graph
                 //cout << "DEBUG_1 : E," << id1 << "," << id2 << "," << w << "," << n << "," << e0 << "," << e1 << endl;
-                addEdgeByID(id1, id2, w, n, e0, e1);
+                x1 = getVertexByID(id1).getX();
+                y1 = getVertexByID(id1).getY();
+                x2 = getVertexByID(id2).getX();
+                y2 = getVertexByID(id2).getY();
+                w  = sqrt(pow(x1 - x2, 2) + pow(y1 - y2, 2));
+                //addEdgeByID(id1, id2, w, n, e0, e1);
+                addEdgeByID(id1, id2, w, n);
                 cpt++;
             }
         }
@@ -477,6 +493,9 @@ class Graph {
                     active_queue.push_back(vnext);
                     return active_queue;
                 }
+            }
+            for (auto it = std::begin(temp_list); it != std::end(temp_list); ++it) {
+                vnext = *it;
                 // if exists in closed_set
                 if ((std::find(closed_set.begin(), closed_set.end(), vnext) != closed_set.end())) {
                     continue;
@@ -489,6 +508,11 @@ class Graph {
         } while (active_queue.size()!=0);
         return active_queue;
     }
+/*
+    // Dijkstra algorithm
+    list<int> Dijkstra(int vstart, int vstop) {
+
+    }*/
 
 };
 
