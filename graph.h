@@ -155,17 +155,17 @@ class Vertex {
 //  }
 
     void printEdgeList() {
-        cout << "[";
+        cout << "[ ";
         for (auto it = edgeList.begin(); it != edgeList.end(); it++) {
-            cout << it->getDestinationVertexID() << " - "
-                 << it->getName() << " (" << it->getWeight() << ") --> ";
+            cout << it->getDestinationVertexID() << " ";
+                 // << it->getName() << " (" << it->getWeight() << ") --> ";
         }
         cout << "]";
         cout << endl;
     }
 
-    list<int> getEdgesIdList() {
-        list<int> le;
+    list<int> getEdgesIdList(list<int> &le) {
+        le.clear();
         for (auto it = edgeList.begin(); it != edgeList.end(); it++) {
             le.push_back(it->getDestinationVertexID());
         }
@@ -470,19 +470,20 @@ class Graph {
             active_queue.pop_front();
             closed_set.push_front(vcurrent);
             // list of edges in current vertex
-            temp_list = getVertexByID(vcurrent).getEdgesIdList();
+            getVertexByID(vcurrent).getEdgesIdList(temp_list);
             for (auto it = std::begin(temp_list); it != std::end(temp_list); ++it) {
                 vnext = *it;
-                std::cout << vnext << " = " << *it << std::endl;
                 if (vnext == vstop) {
-                    active_queue.push_front(vnext);
+                    active_queue.push_back(vnext);
                     return active_queue;
                 }
+                // if exists in closed_set
                 if ((std::find(closed_set.begin(), closed_set.end(), vnext) != closed_set.end())) {
                     continue;
                 }
-                if ((std::find(active_queue.begin(), active_queue.end(), vnext) != active_queue.end())) {
-                    active_queue.push_front(vnext);
+                // if does not exist in active_queue
+                if ((std::find(active_queue.begin(), active_queue.end(), vnext) == active_queue.end())) {
+                    active_queue.push_back(vnext);
                 }
             }
         } while (active_queue.size()!=0);

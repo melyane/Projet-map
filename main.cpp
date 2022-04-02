@@ -7,16 +7,13 @@
 #include "graph.h"
 
 
-void test_bfs(Graph &graph, int vstart, int vstop) {
-    auto start = std::chrono::steady_clock::now();
+void test_bfs(Graph graph, int vstart, int vstop) {
     list<int> path = graph.BFS(vstart, vstop);
-    std::cout << "PathFinder : start " << vstart << " to " << vstop << " with " << sizeof(path)/sizeof(int) << " vertices" << std::endl;
-    //for (auto const &i: path) {
-    //    std::cout << "PATH : " << i << " => ";
-    //}
-    auto end = std::chrono::steady_clock::now();
-    auto elapsed_seconds = end-start;
-    std::cout << "BFS - elapsed time: " << elapsed_seconds.count() << " sec" << std::endl << std::endl;
+    std::cout << "PathFinder : start " << vstart << " to " << vstop << " with " << path.size() << " vertices" << std::endl;
+    std::cout << "PATH : " << std::endl;
+    for (int i: path) {
+        std::cout << i << " => ";
+    }
 }
 
 int main(int argc, char *argv[])
@@ -37,14 +34,26 @@ int main(int argc, char *argv[])
 
     // BFS
     // first BFS test
+    start = std::chrono::steady_clock::now();
     test_bfs(graph, 19791, 50179);
+    end = std::chrono::steady_clock::now();
+    elapsed_seconds = end - start;
+    std::cout << "BFS - elapsed time: " << elapsed_seconds.count() << " sec" << std::endl << std::endl;
     // second BFS test
+    start = std::chrono::steady_clock::now();
     test_bfs(graph, 73964, 272851);
+    end = std::chrono::steady_clock::now();
+    elapsed_seconds = end - start;
+    std::cout << "BFS - elapsed time: " << elapsed_seconds.count() << " sec" << std::endl << std::endl;
     // custom BFS test
+    start = std::chrono::steady_clock::now();
     test_bfs(graph, 10, 32);
     test_bfs(graph, 500, 1534);
     test_bfs(graph, 5152, 256);
     test_bfs(graph, 53, 9);
+    end = std::chrono::steady_clock::now();
+    elapsed_seconds = end - start;
+    std::cout << "BFS - elapsed time: " << elapsed_seconds.count() << " sec" << std::endl << std::endl;
 
     // QT display
     start = std::chrono::steady_clock::now();
