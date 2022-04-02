@@ -51,6 +51,8 @@ void MainWindow::populateScene(Graph g)
     VIdList = g.getVertexIdList();
     int cpte=0;
     Vertex ve, vto;
+    //double xmap, ymap;
+    //int height=10000000, width=10000000;
     for (int i = 0; i < int(VIdList.size()); i++) {
     //for (int i = 0; i < 15; i++) {
         ve = g.getVertexByID(VIdList.at(i));
@@ -61,6 +63,21 @@ void MainWindow::populateScene(Graph g)
             vto = g.getVertexByID(it->getDestinationVertexID());
             //QLineF line_temp(ve.getX(),ve.getY(),vto.getX(),vto.getY());
             //scene->addLine(line_temp);
+
+            // width is map width
+            //x = fmod((width*(180+lon)/360), (width +(width/2)));
+            //xmap = fmod((width*ve.getX()), (width +(width/2)));
+
+            // height and width are map height and width
+            //double PI = 3.14159265359;
+            //double latRad = lat*PI/180;
+            // get y value
+            //double mercN = log(tan((PI/4)+(latRad/2)));
+            //y = (height/2)-(width*mercN/(2*PI));
+            //ymap = (height/2)-(width*vto.getX());
+
+            //, int height=10000000, int width=10000000
+
             scene->addLine(QLineF(ve.getX(),ve.getY(),vto.getX(),vto.getY()));
             cpte++;
         }

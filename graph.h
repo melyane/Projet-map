@@ -135,17 +135,11 @@ class Vertex {
         y = yd;
     }
 
-    void setX(double lon, int width) {
-        // width is map width
-        x = fmod((width*(180+lon)/360), (width +(width/2)));
+    void setXMerc(double lon) {
+        x = 6378137*cos(38.99971*M_PI/180)*(lon+77.13325)*M_PI/180;
     }
-    void setY(double lat, int height, int width) {
-        // height and width are map height and width
-        double PI = 3.14159265359;
-        double latRad = lat*PI/180;
-        // get y value
-        double mercN = log(tan((PI/4)+(latRad/2)));
-        y = (height/2)-(width*mercN/(2*PI));
+    void setYMerc(double lat) {
+        y = -6378137*log(tan((lat-38.99971)*M_PI/360+M_PI/4));
     }
 
     // edge functions
@@ -170,6 +164,14 @@ class Vertex {
         cout << endl;
     }
 
+    list<int> getEdgesIdList() {
+        list<int> le;
+        for (auto it = edgeList.begin(); it != edgeList.end(); it++) {
+            le.push_back(it->getDestinationVertexID());
+        }
+        return le;
+    }
+
     void updateVertexName(double lo, double la, double xd=0, double yd=0) {
         longitude = lo;
         latitude = la;
@@ -186,7 +188,7 @@ class Graph {
 
     protected:
 
-    int readVertex(string fname, int height=10000000, int width=10000000) {
+    int readVertex(string fname) {
         string line, word;
         vector<string> row;
         ifstream name;
@@ -218,8 +220,8 @@ class Graph {
                 // add new vertex in graph
                 //cout << "DEBUG_1 : V," << id1 << "," << lo << "," << la << "," << endl;
                 Vertex e(id1, lo, la);
-                e.setX(lo, width);
-                e.setY(la, height, width);
+                e.setXMerc(lo);
+                e.setYMerc(la);
                 //cout << "x=" << e.getX() << " y=" << e.getY() << endl;
                 addVertex(e);
                 cpt++;
@@ -452,6 +454,39 @@ class Graph {
         cptV = readVertex(fname);
         cptE = readEdge(fname);
         cout << "nb de Vertex : " << cptV << " et nb de Edges : " << cptE << endl;
+    }
+
+    // BFS algorithm
+    list<int> BFS(int vstart, int vstop) {
+        // initialize
+        list<int> active_queue, closed_set, temp_list;
+        int vcurrent, vnext;
+        // ID of the start vertex
+        active_queue.push_back(vstart);
+        do {
+            // from the current vertex in the front of the queue
+            // compute all vertices reachable in 1 step
+            vcurrent =  active_queue.front();
+            active_queue.pop_front();
+            closed_set.push_front(vcurrent);
+            // list of edges in current vertex
+            temp_list = getVertexByID(vcurrent).getEdgesIdList();
+            for (auto it = std::begin(temp_list); it != std::end(temp_list); ++it) {
+                vnext = *it;
+                std::cout << vnext << " = " << *it << std::endl;
+                if (vnext == vstop) {
+                    active_queue.push_front(vnext);
+                    return active_queue;
+                }
+                if ((std::find(closed_set.begin(), closed_set.end(), vnext) != closed_set.end())) {
+                    continue;
+                }
+                if ((std::find(active_queue.begin(), active_queue.end(), vnext) != active_queue.end())) {
+                    active_queue.push_front(vnext);
+                }
+            }
+        } while (active_queue.size()!=0);
+        return active_queue;
     }
 
 };

@@ -6,23 +6,45 @@
 
 #include "graph.h"
 
+
+void test_bfs(Graph &graph, int vstart, int vstop) {
+    auto start = std::chrono::steady_clock::now();
+    list<int> path = graph.BFS(vstart, vstop);
+    std::cout << "PathFinder : start " << vstart << " to " << vstop << " with " << sizeof(path)/sizeof(int) << " vertices" << std::endl;
+    //for (auto const &i: path) {
+    //    std::cout << "PATH : " << i << " => ";
+    //}
+    auto end = std::chrono::steady_clock::now();
+    auto elapsed_seconds = end-start;
+    std::cout << "BFS - elapsed time: " << elapsed_seconds.count() << " sec" << std::endl << std::endl;
+}
+
 int main(int argc, char *argv[])
 {
     // cartesian data size
     // lo -77.1166 -76.9105
     // la  38.8135  38.9945
 
-    auto start = std::chrono::steady_clock::now();
-
     // file name is argv[2]
     // create a graph object from given file
+    auto start = std::chrono::steady_clock::now();
     //Graph graph(argv[2]);
     Graph graph("../MapPathFinder/graph_dc_area.2022-03-11.txt");
     //graph.printGraph();
-
     auto end = std::chrono::steady_clock::now();
     std::chrono::duration<double> elapsed_seconds = end-start;
-    cout << "CACHE - elapsed time: " << elapsed_seconds.count() << " sec" << endl;
+    cout << "CACHE - elapsed time: " << elapsed_seconds.count() << " sec" << endl << endl;
+
+    // BFS
+    // first BFS test
+    test_bfs(graph, 19791, 50179);
+    // second BFS test
+    test_bfs(graph, 73964, 272851);
+    // custom BFS test
+    test_bfs(graph, 10, 32);
+    test_bfs(graph, 500, 1534);
+    test_bfs(graph, 5152, 256);
+    test_bfs(graph, 53, 9);
 
     // QT display
     start = std::chrono::steady_clock::now();
