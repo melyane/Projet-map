@@ -11,6 +11,8 @@
 #include <algorithm>
 #include <sstream>
 #include <cmath>
+#include <iomanip>
+#include <utility>
 
 using namespace std;
 
@@ -474,12 +476,14 @@ class Graph {
 
     void create_log (int cpt, list <int> le) {
         double length = 0.0;
+        int nb_v = 1;
         cout << "Total visited vertex = " << cpt << endl;
         cout << "Total vertex on path from start to end = " << le.size() << endl;
         for (auto it = std::begin(le); it != std::end(le); ++it) {
-            vnext = *it;
-            cout << "Vertex [" << id+1 << "] = " << le[id] << ", length = " << length << endl;
+            int id = *it;
+            cout << "Vertex [" << setw(4) << nb_v << "] = " << id << ", length = " << setw(12) << length << endl;
             length += getVertexByID(id).getWeightbyId(id+1);
+            nb_v+=1;
         }
     }
 
@@ -504,6 +508,7 @@ class Graph {
                 ++cpt;
                 if (vnext == vstop) {
                     active_queue.push_back(vnext);
+                    create_log (cpt, active_queue);
                     return active_queue;
                 }
             }
@@ -519,6 +524,7 @@ class Graph {
                 }
             }
         } while (active_queue.size()!=0);
+        create_log (cpt, active_queue);
         return active_queue;
     }
 
