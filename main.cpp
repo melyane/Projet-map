@@ -37,7 +37,7 @@ int main(int argc, char *argv[])
     // first BFS test
     start = std::chrono::steady_clock::now();
     //test_bfs(graph, 19791, 50179);
-    graph.BFS(19791, 50179);
+    list<int> ve = graph.BFS(19791, 50179);
     end = std::chrono::steady_clock::now();
     elapsed_seconds = end - start;
     std::cout << "BFS - elapsed time: " << elapsed_seconds.count() << " sec" << std::endl << std::endl;
@@ -48,15 +48,15 @@ int main(int argc, char *argv[])
     end = std::chrono::steady_clock::now();
     elapsed_seconds = end - start;
     std::cout << "BFS - elapsed time: " << elapsed_seconds.count() << " sec" << std::endl << std::endl;
-
+*/
     // third BFS test
     start = std::chrono::steady_clock::now();
-    graph.BFS(86771, 110636);
+    list<int> ve = graph.BFS(86771, 110636);
     end = std::chrono::steady_clock::now();
     elapsed_seconds = end - start;
     std::cout << "BFS - elapsed time: " << elapsed_seconds.count() << " sec" << std::endl << std::endl;
 
-
+/*
     // first Dijkstra test
     start = std::chrono::steady_clock::now();
     graph.Dijkstra(86771, 110636);
@@ -86,10 +86,11 @@ int main(int argc, char *argv[])
     elapsed_seconds = end - start;
     std::cout << "Astar - elapsed time: " << elapsed_seconds.count() << " sec" << std::endl << std::endl;
 
+
     // QT display
     start = std::chrono::steady_clock::now();
     QApplication a(argc, argv);
-    MainWindow w(graph);
+    MainWindow w(graph, ve);
     end = std::chrono::steady_clock::now();
     elapsed_seconds = end-start;
     cout << "PAINT - elapsed time: " << elapsed_seconds.count() << " sec" << endl;

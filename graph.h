@@ -622,7 +622,6 @@ class Graph {
         return final_path;
     }
 
-
     // Dijkstra algorithm
     list<int> Dijkstra(int vstart, int vstop) {
         // reset weight values

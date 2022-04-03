@@ -14,11 +14,11 @@ class MainWindow : public QWidget
 {
     Q_OBJECT
 public:
-    MainWindow(Graph g, QWidget *parent = nullptr);
+    MainWindow(Graph g, list<int> V_path, QWidget *parent = nullptr);
 
 private:
     void setupMatrix();
-    void map(Graph g);
+    void map(Graph g, list<int> V_path);
 
     QGraphicsScene *scene;
     QSplitter *h1Splitter;
