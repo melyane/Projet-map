@@ -18,7 +18,7 @@ public:
 
 private:
     void setupMatrix();
-    void populateScene(Graph g);
+    void map(Graph g);
 
     QGraphicsScene *scene;
     QSplitter *h1Splitter;
