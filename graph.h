@@ -204,6 +204,8 @@ class Vertex {
 
 };
 
+
+
 class Graph {
 
     vector < Vertex > vertices;
@@ -387,6 +389,19 @@ class Graph {
         return flag;
     }
 
+    void updateWeightVertex(int oldVID, double w) {
+        bool check = checkIfVertexExistByID(oldVID);
+        if (check == true) {
+            for (int i = 0; i < int(vertices.size()); i++) {
+                if (vertices.at(i).getID() == oldVID) {
+                    vertices.at(i).setWeight(w);
+                    break;
+                }
+            }
+        //cout << "Vertex(State) Updated Successfully " << endl;
+        }
+    }
+
     void updateVertex(int oldVID, double lo, double la, double xd=0, double yd=0) {
         bool check = checkIfVertexExistByID(oldVID);
         if (check == true) {
@@ -513,7 +528,6 @@ class Graph {
         fp.clear();
         pair<int,int> elem = p.front();
         int previous = elem.first;
-        fp.push_front(0);
         fp.push_front(elem.second);
         for (auto it = std::begin(p); it != std::end(p); ++it) {
             elem = *it;
@@ -529,10 +543,13 @@ class Graph {
         int nb_v = 1;
         cout << "Total visited vertex = " << cpt << endl;
         cout << "Total vertex on path from start to end = " << le.size() << endl;
-        for (auto it = std::begin(le); it != --std::end(le); ++it) {
-            int id = *it, id2 = *(++it);
+        for (auto it = std::begin(le); it != std::end(le); ++it) {
+            int id = *it;
             cout << setprecision(2) << fixed << "Vertex [" << setw(4) << nb_v << "] = " << setw(8) << id << ", length = " << setw(8) << length << endl;
-            length += getVertexByID(id).getWeightbyId(id2);
+            if (it != --std::end(le)) {
+                int id2 = *(++it); --it;
+                length += getVertexByID(id).getWeightbyId(id2);
+            }
             nb_v+=1;
         }
     }
@@ -557,7 +574,7 @@ class Graph {
                 vnext = *it;
                 if (vnext == vstop) {
                     std::cout << "=== FINAL PATH found ===" << std::endl;
-                    std::cout << "first elem : " << vstart << " and last elem : " << vstop << std::endl;
+                    //std::cout << "first elem : " << vstart << " and last elem : " << vstop << std::endl;
                     path.push_front(pair<int,int>(vcurrent,vnext));
                     analyze(path, final_path);
                     create_log(cpt, final_path);
@@ -579,12 +596,14 @@ class Graph {
         return final_path;
     }
 
+
     // Dijkstra algorithm
     list<int> Dijkstra(int vstart, int vstop) {
         // reset weight values
         set_infinite_weight(vstart);
         // initialize
         list<int> active_queue, closed_set, temp_list, final_path;
+        list<pair<int, double>> temp_sort;
         list<pair<int,int>> path;
         path.push_front(pair<int,int>(-1,vstart));
         int cpt=1;
@@ -610,46 +629,42 @@ class Graph {
                 if ((std::find(closed_set.begin(), closed_set.end(), vnext) != closed_set.end())) {
                     continue;
                 }
+                double w = getVertexByID(vcurrent).getWeight() + getVertexByID(vcurrent).getWeightbyId(vnext);
                 // if does not exist in active_queue
                 if ((std::find(active_queue.begin(), active_queue.end(), vnext) == active_queue.end())) {
+                    //getVertexByID(vnext).setWeight(w);
+                    updateWeightVertex(vnext, w);
                     active_queue.push_back(vnext);
                     path.push_front(pair<int,int>(vcurrent,vnext));
                     ++cpt;
+                }
+                else if (w < getVertexByID(vnext).getWeight()) {
+                    //getVertexByID(vnext).setWeight(w);
+                    updateWeightVertex(vnext, w);
+                }
+                // the partial sort ensure that the vertex with the smallest w
+                // is the first on the active_queue
+                temp_sort.clear();
+                for (auto its = std::begin(active_queue); its != std::end(active_queue); ++its) {
+                    pair<int, double> elem;
+                    elem.first = *its;
+                    elem.second = getVertexByID(*its).getWeight();
+                    temp_sort.push_back(elem);
+                }
+                temp_sort.sort([](pair<int, double> a, pair<int, double> b)
+                {
+                    return a.second < b.second;
+                });
+                active_queue.clear();
+                for (auto itt = std::begin(temp_sort); itt != std::end(temp_sort); ++itt) {
+                    pair<int,double> p = *itt;
+                    active_queue.push_back(p.first);
                 }
             }
         } while (active_queue.size()!=0);
         create_log(cpt, final_path);
         return final_path;
-
     }
-
-    /*
-         set_all_vertex_weight_to_max_value(); ///// ##########
-
-        do {
-         auto vcurrent = active_queue.pop_front();
-
-         if (vcurrent == vend) break;
-         closed_set.add(vcurrent);
-
-         for(vnext in adjacency list of vcurrent) {
-         if (vnext is in closed_set) {
-            continue;
-         }
-         auto w = vcurrent.get_weight() + get_edge_w(vcurrent, vnext);
-         if (vnext is not already in active_queue) {
-            vnext.set_weight(w);
-            active_queue.push_end(vnext);
-         } else if (w < vnext.get_weight()) {
-            vnext.set_weight(w);
-         }
-         }
-         // the partial sort ensure that the vertex with the smallest w
-         // is the first on the active_queue
-         active_queue.partial_sort();
-         } while (active_queue.size() != 0)
-        }
-    */
 
 };
 
