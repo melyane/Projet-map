@@ -55,21 +55,36 @@ int main(int argc, char *argv[])
     end = std::chrono::steady_clock::now();
     elapsed_seconds = end - start;
     std::cout << "BFS - elapsed time: " << elapsed_seconds.count() << " sec" << std::endl << std::endl;
-*/
-    // first Dijkstra test
-    start = std::chrono::steady_clock::now();
-    graph.Dijkstra(73964, 272851);
-    end = std::chrono::steady_clock::now();
-    elapsed_seconds = end - start;
-    std::cout << "Dijkstra - elapsed time: " << elapsed_seconds.count() << " sec" << std::endl << std::endl;
 
-    // second Dijkstra test
+
+    // first Dijkstra test
     start = std::chrono::steady_clock::now();
     graph.Dijkstra(86771, 110636);
     end = std::chrono::steady_clock::now();
     elapsed_seconds = end - start;
     std::cout << "Dijkstra - elapsed time: " << elapsed_seconds.count() << " sec" << std::endl << std::endl;
 
+    // second Dijkstra test
+    start = std::chrono::steady_clock::now();
+    graph.Dijkstra(73964, 272851);
+    end = std::chrono::steady_clock::now();
+    elapsed_seconds = end - start;
+    std::cout << "Dijkstra - elapsed time: " << elapsed_seconds.count() << " sec" << std::endl << std::endl;
+*/
+
+    // first Astar test
+    start = std::chrono::steady_clock::now();
+    graph.Astar(86771, 110636);
+    end = std::chrono::steady_clock::now();
+    elapsed_seconds = end - start;
+    std::cout << "Astar - elapsed time: " << elapsed_seconds.count() << " sec" << std::endl << std::endl;
+
+    // second Astar test
+    start = std::chrono::steady_clock::now();
+    graph.Astar(73964, 272851);
+    end = std::chrono::steady_clock::now();
+    elapsed_seconds = end - start;
+    std::cout << "Astar - elapsed time: " << elapsed_seconds.count() << " sec" << std::endl << std::endl;
 
     // QT display
     start = std::chrono::steady_clock::now();

@@ -3,7 +3,7 @@
 
 #include <QHBoxLayout>
 #include <QSplitter>
-#include <QtWidgets>
+#include <QWidget>
 #include <QGraphicsScene>
 
 MainWindow::MainWindow(Graph g, QWidget *parent)

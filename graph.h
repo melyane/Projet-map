@@ -85,6 +85,7 @@ class Vertex {
     double x;
     double y;
     double weight;
+    double f;
 
     list < Edge > edgeList;
 
@@ -96,6 +97,7 @@ class Vertex {
         x = 0;
         y = 0;
         weight = 0;
+        f = 0;
     }
     Vertex(int id, double lo, double la, double xd=0, double yd=0) {
         Vertex_id = id;
@@ -104,6 +106,7 @@ class Vertex {
         x = xd;
         y = yd;
         weight = 0;
+        f = 0;
     }
 
     // get functions
@@ -125,6 +128,9 @@ class Vertex {
     double getWeight() {
         return weight;
     }
+    double getF() {
+        return f;
+    }
 
 
     // set functions
@@ -145,6 +151,9 @@ class Vertex {
     }
     void setWeight(double w) {
         weight = w;
+    }
+    void setF(double ft) {
+        f = ft;
     }
 
     void setXMerc(double lon) {
@@ -319,11 +328,15 @@ class Graph {
         Vertex temp;
         vector<int> V1list = getVertexIdList();
         for (auto v1 = std::begin(V1list); v1 != std::end(V1list); ++v1) {
-            temp = vertices.at(*v1);
-            temp.setWeight(99999999);
+            //int test = *v1;
+            //temp = vertices.at(test);
+            //getVertexByID(*v1).setWeight(99999999);
+            updateWeightVertex(*v1, 999999999);
         }
-        temp = vertices.at(vstart);
-        temp.setWeight(0);
+        //temp = vertices.at(vstart);
+        //temp.setWeight(0);
+        //getVertexByID(vstart).setWeight(0);
+        updateWeightVertex(vstart, 0);
     }
 
     public:
@@ -395,6 +408,19 @@ class Graph {
             for (int i = 0; i < int(vertices.size()); i++) {
                 if (vertices.at(i).getID() == oldVID) {
                     vertices.at(i).setWeight(w);
+                    break;
+                }
+            }
+        //cout << "Vertex(State) Updated Successfully " << endl;
+        }
+    }
+
+    void updateFVertex(int oldVID, double f) {
+        bool check = checkIfVertexExistByID(oldVID);
+        if (check == true) {
+            for (int i = 0; i < int(vertices.size()); i++) {
+                if (vertices.at(i).getID() == oldVID) {
+                    vertices.at(i).setF(f);
                     break;
                 }
             }
@@ -602,17 +628,94 @@ class Graph {
         // reset weight values
         set_infinite_weight(vstart);
         // initialize
-        list<int> closed_set, temp_list, final_path;
-        list<pair<int, double>> temp_sort, active_queue;
+        list<int> active_queue, closed_set, temp_list, final_path;
+        list<pair<int, double>> temp_sort;
         list<pair<int,int>> path;
         path.push_front(pair<int,int>(-1,vstart));
         int cpt=1;
         int vcurrent, vnext;
         // ID of the start vertex
-        active_queue.push_back(pair<int,double>(vstart, getVertexByID(vstart).getWeight()));
+        active_queue.push_back(vstart);
         do {
-            pair<int, double> temp_pair = active_queue.front();
-            vcurrent = temp_pair.first;
+            vcurrent = active_queue.front();
+            active_queue.pop_front();
+            closed_set.push_front(vcurrent);
+            // list of edges in current vertex
+            getVertexByID(vcurrent).getEdgesIdList(temp_list);
+            for (auto it = std::begin(temp_list); it != std::end(temp_list); ++it) {
+                vnext = *it;
+                std::cout << "DEBUG : " << vnext << std::endl;
+                if (vnext == vstop) {
+                    std::cout << "=== FINAL PATH found ===" << std::endl;
+                    path.push_front(pair<int,int>(vcurrent,vnext));
+                    analyze(path, final_path);
+                    create_log(cpt, final_path);
+                    return final_path;
+                }
+                // if exists in closed_set
+                if ((std::find(closed_set.begin(), closed_set.end(), vnext) != closed_set.end())) {
+                    continue;
+                }
+                double w = getVertexByID(vcurrent).getWeight() + getVertexByID(vcurrent).getWeightbyId(vnext);
+                // if does not exist in active_queue
+                if ((std::find(active_queue.begin(), active_queue.end(), vnext) == active_queue.end())) {
+                    //getVertexByID(vnext).setWeight(w);
+                    updateWeightVertex(vnext, w);
+                    active_queue.push_back(vnext);
+                    path.push_front(pair<int,int>(vcurrent,vnext));
+                    ++cpt;
+                }
+                else if (w < getVertexByID(vnext).getWeight()) {
+                    //getVertexByID(vnext).setWeight(w);
+                    updateWeightVertex(vnext, w);
+                }
+            }
+            // the partial sort ensure that the vertex with the smallest w
+            // is the first on the active_queue
+            temp_sort.clear();
+            for (auto its = std::begin(active_queue); its != std::end(active_queue); ++its) {
+                pair<int, double> elem;
+                elem.first = *its;
+                elem.second = getVertexByID(*its).getWeight();
+                temp_sort.push_back(elem);
+            }
+            temp_sort.sort([](pair<int, double> a, pair<int, double> b)
+            {
+                return a.second < b.second;
+            });
+            active_queue.clear();
+            for (auto itt = std::begin(temp_sort); itt != std::end(temp_sort); ++itt) {
+                pair<int,double> p = *itt;
+                active_queue.push_back(p.first);
+            }
+        } while (active_queue.size()!=0);
+        create_log(cpt, final_path);
+        return final_path;
+    }
+
+    double heuristic_distance_estimator(int id1, int id2) {
+        double x1 = getVertexByID(id1).getX();
+        double y1 = getVertexByID(id1).getY();
+        double x2 = getVertexByID(id2).getX();
+        double y2 = getVertexByID(id2).getY();
+        return (sqrt(pow(x1 - x2, 2) + pow(y1 - y2, 2)));
+    }
+
+    // Astar algorithm
+    list<int> Astar(int vstart, int vstop) {
+        // reset weight values
+        set_infinite_weight(vstart);
+        // initialize
+        list<int> active_queue, closed_set, temp_list, final_path;
+        list<pair<int, double>> temp_sort;
+        list<pair<int,int>> path;
+        path.push_front(pair<int,int>(-1,vstart));
+        int cpt=1;
+        int vcurrent, vnext;
+        // ID of the start vertex
+        active_queue.push_back(vstart);
+        do {
+            vcurrent = active_queue.front();
             active_queue.pop_front();
             closed_set.push_front(vcurrent);
             // list of edges in current vertex
@@ -630,28 +733,40 @@ class Graph {
                 if ((std::find(closed_set.begin(), closed_set.end(), vnext) != closed_set.end())) {
                     continue;
                 }
-                double w = getVertexByID(vcurrent).getWeight() + getVertexByID(vcurrent).getWeightbyId(vnext);
-                pair<int, double> vnext_pair = pair<int,double>(vnext, getVertexByID(vnext).getWeight());
+                double g = getVertexByID(vcurrent).getWeight() + getVertexByID(vcurrent).getWeightbyId(vnext);
+                double f = g + heuristic_distance_estimator(vnext, vstop);
                 // if does not exist in active_queue
-                if ((std::find(active_queue.begin(), active_queue.end(), vnext_pair) == active_queue.end())) {
-                    //getVertexByID(vnext).setWeight(w);
-                    updateWeightVertex(vnext, w);
-                    active_queue.push_back(pair<int,double>(vnext, getVertexByID(vnext).getWeight()));
+                if ((std::find(active_queue.begin(), active_queue.end(), vnext) == active_queue.end())) {
+                    //getVertexByID(vnext).setWeight(g);
+                    updateWeightVertex(vnext, g);
+                    updateFVertex(vnext, f);
+                    active_queue.push_back(vnext);
                     path.push_front(pair<int,int>(vcurrent,vnext));
                     ++cpt;
                 }
-                else if (w < getVertexByID(vnext).getWeight()) {
-                    //getVertexByID(vnext).setWeight(w);
-                    updateWeightVertex(vnext, w);
+                else if (g < getVertexByID(vnext).getWeight()) {
+                    //getVertexByID(vnext).setWeight(g);
+                    updateWeightVertex(vnext, g);
+                    updateFVertex(vnext, f);
                 }
-                /*
-                // the partial sort ensure that the vertex with the smallest w
-                // is the first on the active_queue
-                active_queue.sort([](pair<int, double> a, pair<int, double> b)
-                {
-                    return a.second < b.second;
-                });
-                */
+            }
+            // the partial sort ensure that the vertex with the smallest w
+            // is the first on the active_queue
+            temp_sort.clear();
+            for (auto its = std::begin(active_queue); its != std::end(active_queue); ++its) {
+                pair<int, double> elem;
+                elem.first = *its;
+                elem.second = getVertexByID(*its).getF();
+                temp_sort.push_back(elem);
+            }
+            temp_sort.sort([](pair<int, double> a, pair<int, double> b)
+            {
+                return a.second < b.second;
+            });
+            active_queue.clear();
+            for (auto itt = std::begin(temp_sort); itt != std::end(temp_sort); ++itt) {
+                pair<int,double> p = *itt;
+                active_queue.push_back(p.first);
             }
         } while (active_queue.size()!=0);
         create_log(cpt, final_path);
