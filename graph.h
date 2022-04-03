@@ -168,13 +168,6 @@ class Vertex {
         return edgeList;
     }
 
-//  void addEdgeToEdgelist(int toVertexID, int weight)
-//  {
-//	  	Edge e(toVertexID,weight);
-//		edgeList.push_back(e);
-//		cout<<"Edge between "<<Vertex_id<<" and "<<toVertexID<<" added Successfully"<<endl;
-//  }
-
     void printEdgeList() {
         cout << "[ ";
         for (auto it = edgeList.begin(); it != edgeList.end(); it++) {
@@ -247,11 +240,9 @@ class Graph {
                 lo = stod(row[2]);
                 la = stod(row[3]);
                 // add new vertex in graph
-                //cout << "DEBUG_1 : V," << id1 << "," << lo << "," << la << "," << endl;
                 Vertex e(id1, lo, la);
                 e.setXMerc(lo);
                 e.setYMerc(la);
-                //cout << "x=" << e.getX() << " y=" << e.getY() << endl;
                 addVertex(e);
                 cpt++;
             }
@@ -269,10 +260,6 @@ class Graph {
             exit(EXIT_FAILURE);
         }
         int cpt=0;
-        //int id1, id2 ;
-        //double w, x1, x2, y1, y2 ;
-        //double w;
-        //string n, e0, e1;
         string n;
         while (getline(name, line)) {
             // clean buffer
@@ -283,22 +270,6 @@ class Graph {
                 while(getline(str, word, ',')) {
                     row.push_back(word);
                 }
-                //row.push_back("");
-                //id1 = stoi(row[1]) ;
-                //id2 = stoi(row[2]) ;
-                //w = stod(row[3]) ;
-                //n = row[4] ;
-                //e0 = row[5] ;
-                //e1 = row[6] ;
-                // add new edge in graph
-                //cout << "DEBUG_1 : E," << id1 << "," << id2 << "," << w << "," << n << "," << e0 << "," << e1 << endl;
-                //x1 = getVertexByID(id1).getX();
-                //y1 = getVertexByID(id1).getY();
-                //x2 = getVertexByID(id2).getX();
-                //y2 = getVertexByID(id2).getY();
-                //w  = sqrt(pow(x1 - x2, 2) + pow(y1 - y2, 2));
-                //addEdgeByID(id1, id2, w, n, e0, e1);
-                //addEdgeByID(id1, id2, w, n);
                 addEdgeByID(stoi(row[1]), stoi(row[2]), stod(row[3]), row[4]);
                 cpt++;
             }
@@ -328,14 +299,8 @@ class Graph {
         Vertex temp;
         vector<int> V1list = getVertexIdList();
         for (auto v1 = std::begin(V1list); v1 != std::end(V1list); ++v1) {
-            //int test = *v1;
-            //temp = vertices.at(test);
-            //getVertexByID(*v1).setWeight(99999999);
             updateWeightVertex(*v1, 999999999);
         }
-        //temp = vertices.at(vstart);
-        //temp.setWeight(0);
-        //getVertexByID(vstart).setWeight(0);
         updateWeightVertex(vstart, 0);
     }
 
@@ -372,7 +337,6 @@ class Graph {
             cout << "Vertex with this ID already exist" << endl;
         } else {
             vertices.push_back(newVertex);
-            //cout << "New Vertex Added Successfully" << endl;
         }
     }
 
@@ -411,7 +375,6 @@ class Graph {
                     break;
                 }
             }
-        //cout << "Vertex(State) Updated Successfully " << endl;
         }
     }
 
@@ -424,7 +387,6 @@ class Graph {
                     break;
                 }
             }
-        //cout << "Vertex(State) Updated Successfully " << endl;
         }
     }
 
@@ -440,7 +402,6 @@ class Graph {
                     break;
                 }
             }
-        //cout << "Vertex(State) Updated Successfully " << endl;
         }
     }
 
@@ -460,7 +421,6 @@ class Graph {
                         vertices.at(i).edgeList.push_back(e);
                     }
                 }
-                //cout << "Edge between " << fromVertex << " and " << toVertex << " added Successfully" << endl;
             }
         } else {
             cout << "Invalid Vertex ID entered." << endl;
@@ -484,7 +444,6 @@ class Graph {
                     }
                 }
             }
-            //cout << "Edge Weight Updated Successfully " << endl;
         } else {
             cout << "Edge between id" << fromVertex << " and id" << toVertex << " DOES NOT Exist" << endl;
         }
@@ -503,7 +462,6 @@ class Graph {
                     }
                 }
             }
-            //cout << "Edge Between " << fromVertex << " and " << toVertex << " Deleted Successfully." << endl;
         } else {
             cout << "Edge between id" << fromVertex << " and id" << toVertex << " DOES NOT Exist" << endl;
         }
@@ -525,7 +483,6 @@ class Graph {
             }
         }
         vertices.erase(vertices.begin() + vIndex);
-        //cout << "Vertex Deleted Successfully" << endl;
     }
 
     void getAllNeigborsByID(int vid) {
@@ -600,7 +557,6 @@ class Graph {
                 vnext = *it;
                 if (vnext == vstop) {
                     std::cout << "=== FINAL PATH found ===" << std::endl;
-                    //std::cout << "first elem : " << vstart << " and last elem : " << vstop << std::endl;
                     path.push_front(pair<int,int>(vcurrent,vnext));
                     analyze(path, final_path);
                     create_log(cpt, final_path);
@@ -643,7 +599,6 @@ class Graph {
             getVertexByID(vcurrent).getEdgesIdList(temp_list);
             for (auto it = std::begin(temp_list); it != std::end(temp_list); ++it) {
                 vnext = *it;
-                std::cout << "DEBUG : " << vnext << std::endl;
                 if (vnext == vstop) {
                     std::cout << "=== FINAL PATH found ===" << std::endl;
                     path.push_front(pair<int,int>(vcurrent,vnext));
@@ -658,14 +613,12 @@ class Graph {
                 double w = getVertexByID(vcurrent).getWeight() + getVertexByID(vcurrent).getWeightbyId(vnext);
                 // if does not exist in active_queue
                 if ((std::find(active_queue.begin(), active_queue.end(), vnext) == active_queue.end())) {
-                    //getVertexByID(vnext).setWeight(w);
                     updateWeightVertex(vnext, w);
                     active_queue.push_back(vnext);
                     path.push_front(pair<int,int>(vcurrent,vnext));
                     ++cpt;
                 }
                 else if (w < getVertexByID(vnext).getWeight()) {
-                    //getVertexByID(vnext).setWeight(w);
                     updateWeightVertex(vnext, w);
                 }
             }
@@ -736,7 +689,6 @@ class Graph {
                 double f = g + heuristic_distance_estimator(vnext, vstop);
                 // if does not exist in active_queue
                 if ((std::find(active_queue.begin(), active_queue.end(), vnext) == active_queue.end())) {
-                    //getVertexByID(vnext).setWeight(g);
                     updateWeightVertex(vnext, g);
                     updateFVertex(vnext, f);
                     active_queue.push_back(vnext);
@@ -744,7 +696,6 @@ class Graph {
                     ++cpt;
                 }
                 else if (g < getVertexByID(vnext).getWeight()) {
-                    //getVertexByID(vnext).setWeight(g);
                     updateWeightVertex(vnext, g);
                     updateFVertex(vnext, f);
                 }
