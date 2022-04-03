@@ -12,6 +12,7 @@
 #include <sstream>
 #include <cmath>
 #include <iomanip>
+#include <utility>
 
 using namespace std;
 
@@ -83,6 +84,7 @@ class Vertex {
     double latitude;
     double x;
     double y;
+    double weight;
 
     list < Edge > edgeList;
 
@@ -93,6 +95,7 @@ class Vertex {
         latitude = 0;
         x = 0;
         y = 0;
+        weight = 0;
     }
     Vertex(int id, double lo, double la, double xd=0, double yd=0) {
         Vertex_id = id;
@@ -100,6 +103,7 @@ class Vertex {
         latitude = la;
         x = xd;
         y = yd;
+        weight = 0;
     }
 
     // get functions
@@ -118,6 +122,10 @@ class Vertex {
     double getY() {
         return y;
     }
+    double getWeight() {
+        return weight;
+    }
+
 
     // set functions
     void setID(int id) {
@@ -134,6 +142,9 @@ class Vertex {
     }
     void setY(double yd) {
         y = yd;
+    }
+    void setWeight(double w) {
+        weight = w;
     }
 
     void setXMerc(double lon) {
@@ -211,11 +222,7 @@ class Graph {
         int id1, cpt=0 ;
         double lo, la ;
         string n, e0, e1;
-        while (true) {
-            // read new line
-            getline(name, line);
-            if (name.eof()) break;
-            //cout << "DEBUG_0 : " << line << endl;
+        while (getline(name, line)) {
             // clean buffer
             row.clear();
             // new vertex data
@@ -225,9 +232,9 @@ class Graph {
                     row.push_back(word);
                 }
                 row.push_back("");
-                id1 = atoi(row[1].c_str());
-                lo = atof(row[2].c_str());
-                la = atof(row[3].c_str());
+                id1 = stoi(row[1]);
+                lo = stod(row[2]);
+                la = stod(row[3]);
                 // add new vertex in graph
                 //cout << "DEBUG_1 : V," << id1 << "," << lo << "," << la << "," << endl;
                 Vertex e(id1, lo, la);
@@ -250,15 +257,13 @@ class Graph {
             cout << "Error : cannot open the file " << fname << endl;
             exit(EXIT_FAILURE);
         }
-        int id1, id2, cpt=0 ;
-        double w, x1, x2, y1, y2 ;
+        int cpt=0;
+        //int id1, id2 ;
+        //double w, x1, x2, y1, y2 ;
+        //double w;
         //string n, e0, e1;
         string n;
-        while (true) {
-            // read new line
-            getline(name, line);
-            if (name.eof()) break;
-            //cout << "DEBUG_0 : " << line << endl;
+        while (getline(name, line)) {
             // clean buffer
             row.clear();
             // new edge data
@@ -267,29 +272,30 @@ class Graph {
                 while(getline(str, word, ',')) {
                     row.push_back(word);
                 }
-                row.push_back("");
-                id1 = atoi(row[1].c_str()) ;
-                id2 = atoi(row[2].c_str()) ;
-                //w = atof(row[3].c_str()) ;
-                n = row[4] ;
+                //row.push_back("");
+                //id1 = stoi(row[1]) ;
+                //id2 = stoi(row[2]) ;
+                //w = stod(row[3]) ;
+                //n = row[4] ;
                 //e0 = row[5] ;
                 //e1 = row[6] ;
                 // add new edge in graph
                 //cout << "DEBUG_1 : E," << id1 << "," << id2 << "," << w << "," << n << "," << e0 << "," << e1 << endl;
-                x1 = getVertexByID(id1).getX();
-                y1 = getVertexByID(id1).getY();
-                x2 = getVertexByID(id2).getX();
-                y2 = getVertexByID(id2).getY();
-                w  = sqrt(pow(x1 - x2, 2) + pow(y1 - y2, 2));
+                //x1 = getVertexByID(id1).getX();
+                //y1 = getVertexByID(id1).getY();
+                //x2 = getVertexByID(id2).getX();
+                //y2 = getVertexByID(id2).getY();
+                //w  = sqrt(pow(x1 - x2, 2) + pow(y1 - y2, 2));
                 //addEdgeByID(id1, id2, w, n, e0, e1);
-                addEdgeByID(id1, id2, w, n);
+                //addEdgeByID(id1, id2, w, n);
+                addEdgeByID(stoi(row[1]), stoi(row[2]), stod(row[3]), row[4]);
                 cpt++;
             }
         }
        return cpt;
     }
 
-    void set_all_vertex_weight_to_max_value() {
+    void set_weight_merc_on_edges() {
         vector<int> V1list = getVertexIdList();
         list<Edge> le;
         double x1, x2, y1, y2;
@@ -305,6 +311,17 @@ class Graph {
                 ite->setWeight(sqrt(pow(x1 - x2, 2) + pow(y1 - y2, 2)));
             }
         }
+    }
+
+    void set_infinite_weight(int vstart) {
+        Vertex temp;
+        vector<int> V1list = getVertexIdList();
+        for (auto v1 = std::begin(V1list); v1 != std::end(V1list); ++v1) {
+            temp = vertices.at(*v1);
+            temp.setWeight(99999999);
+        }
+        temp = vertices.at(vstart);
+        temp.setWeight(0);
     }
 
     public:
@@ -492,16 +509,30 @@ class Graph {
         }
     }
 
+    void analyze(list<pair<int,int>> &p, list<int> &fp) {
+        fp.clear();
+        pair<int,int> elem = p.front();
+        int previous = elem.first;
+        fp.push_front(0);
+        fp.push_front(elem.second);
+        for (auto it = std::begin(p); it != std::end(p); ++it) {
+            elem = *it;
+            if (previous == elem.second) {
+                fp.push_front(elem.second);
+                previous = elem.first;
+            }
+        }
+    }
 
-    void create_log (int cpt, list <int> le) {
+    void create_log (int cpt, list<int> &le) {
         double length = 0.0;
         int nb_v = 1;
         cout << "Total visited vertex = " << cpt << endl;
         cout << "Total vertex on path from start to end = " << le.size() << endl;
-        for (auto it = std::begin(le); it != std::end(le); ++it) {
-            int id = *it;
-            cout << "Vertex [" << setw(4) << nb_v << "] = " << id << ", length = " << setw(12) << length << endl;
-            length += getVertexByID(id).getWeightbyId(id+1);
+        for (auto it = std::begin(le); it != --std::end(le); ++it) {
+            int id = *it, id2 = *(++it);
+            cout << setprecision(2) << fixed << "Vertex [" << setw(4) << nb_v << "] = " << setw(8) << id << ", length = " << setw(8) << length << endl;
+            length += getVertexByID(id).getWeightbyId(id2);
             nb_v+=1;
         }
     }
@@ -509,28 +540,29 @@ class Graph {
     // BFS algorithm
     list<int> BFS(int vstart, int vstop) {
         // initialize
-        list<int> active_queue, closed_set, temp_list;
-        int cpt=0;
+        list<int> active_queue, closed_set, temp_list, final_path;
+        list<pair<int,int>> path;
+        path.push_front(pair<int,int>(-1,vstart));
+        int cpt=1;
         int vcurrent, vnext;
         // ID of the start vertex
         active_queue.push_back(vstart);
         do {
-            vcurrent =  active_queue.front();
+            vcurrent = active_queue.front();
             active_queue.pop_front();
             closed_set.push_front(vcurrent);
             // list of edges in current vertex
             getVertexByID(vcurrent).getEdgesIdList(temp_list);
             for (auto it = std::begin(temp_list); it != std::end(temp_list); ++it) {
                 vnext = *it;
-                ++cpt;
                 if (vnext == vstop) {
-                    active_queue.push_back(vnext);
-                    create_log (cpt, active_queue);
-                    return active_queue;
+                    std::cout << "=== FINAL PATH found ===" << std::endl;
+                    std::cout << "first elem : " << vstart << " and last elem : " << vstop << std::endl;
+                    path.push_front(pair<int,int>(vcurrent,vnext));
+                    analyze(path, final_path);
+                    create_log(cpt, final_path);
+                    return final_path;
                 }
-            }
-            for (auto it = std::begin(temp_list); it != std::end(temp_list); ++it) {
-                vnext = *it;
                 // if exists in closed_set
                 if ((std::find(closed_set.begin(), closed_set.end(), vnext) != closed_set.end())) {
                     continue;
@@ -538,24 +570,29 @@ class Graph {
                 // if does not exist in active_queue
                 if ((std::find(active_queue.begin(), active_queue.end(), vnext) == active_queue.end())) {
                     active_queue.push_back(vnext);
+                    path.push_front(pair<int,int>(vcurrent,vnext));
+                    ++cpt;
                 }
             }
         } while (active_queue.size()!=0);
-        create_log (cpt, active_queue);
-        return active_queue;
+        create_log(cpt, final_path);
+        return final_path;
     }
 
     // Dijkstra algorithm
     list<int> Dijkstra(int vstart, int vstop) {
         // reset weight values
-        set_all_vertex_weight_to_max_value();
+        set_infinite_weight(vstart);
         // initialize
-        list<int> active_queue, closed_set, temp_list;
+        list<int> active_queue, closed_set, temp_list, final_path;
+        list<pair<int,int>> path;
+        path.push_front(pair<int,int>(-1,vstart));
+        int cpt=1;
         int vcurrent, vnext;
         // ID of the start vertex
         active_queue.push_back(vstart);
         do {
-            vcurrent =  active_queue.front();
+            vcurrent = active_queue.front();
             active_queue.pop_front();
             closed_set.push_front(vcurrent);
             // list of edges in current vertex
@@ -563,12 +600,12 @@ class Graph {
             for (auto it = std::begin(temp_list); it != std::end(temp_list); ++it) {
                 vnext = *it;
                 if (vnext == vstop) {
-                    active_queue.push_back(vnext);
-                    return active_queue;
+                    std::cout << "=== FINAL PATH found ===" << std::endl;
+                    path.push_front(pair<int,int>(vcurrent,vnext));
+                    analyze(path, final_path);
+                    create_log(cpt, final_path);
+                    return final_path;
                 }
-            }
-            for (auto it = std::begin(temp_list); it != std::end(temp_list); ++it) {
-                vnext = *it;
                 // if exists in closed_set
                 if ((std::find(closed_set.begin(), closed_set.end(), vnext) != closed_set.end())) {
                     continue;
@@ -576,12 +613,18 @@ class Graph {
                 // if does not exist in active_queue
                 if ((std::find(active_queue.begin(), active_queue.end(), vnext) == active_queue.end())) {
                     active_queue.push_back(vnext);
+                    path.push_front(pair<int,int>(vcurrent,vnext));
+                    ++cpt;
                 }
             }
-        } while(active_queue.size()!=0);
+        } while (active_queue.size()!=0);
+        create_log(cpt, final_path);
+        return final_path;
+
+    }
 
     /*
-         set_all_vertex_weight_to_max_value(); ???
+         set_all_vertex_weight_to_max_value(); ///// ##########
 
         do {
          auto vcurrent = active_queue.pop_front();
@@ -607,8 +650,6 @@ class Graph {
          } while (active_queue.size() != 0)
         }
     */
-
-    }
 
 };
 

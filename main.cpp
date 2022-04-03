@@ -50,6 +50,13 @@ int main(int argc, char *argv[])
     elapsed_seconds = end - start;
     std::cout << "BFS - elapsed time: " << elapsed_seconds.count() << " sec" << std::endl << std::endl;
 
+    // third BFS test
+    start = std::chrono::steady_clock::now();
+    graph.BFS(86771, 110636);
+    end = std::chrono::steady_clock::now();
+    elapsed_seconds = end - start;
+    std::cout << "BFS - elapsed time: " << elapsed_seconds.count() << " sec" << std::endl << std::endl;
+
     // QT display
     start = std::chrono::steady_clock::now();
     QApplication a(argc, argv);
