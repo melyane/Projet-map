@@ -602,16 +602,17 @@ class Graph {
         // reset weight values
         set_infinite_weight(vstart);
         // initialize
-        list<int> active_queue, closed_set, temp_list, final_path;
-        list<pair<int, double>> temp_sort;
+        list<int> closed_set, temp_list, final_path;
+        list<pair<int, double>> temp_sort, active_queue;
         list<pair<int,int>> path;
         path.push_front(pair<int,int>(-1,vstart));
         int cpt=1;
         int vcurrent, vnext;
         // ID of the start vertex
-        active_queue.push_back(vstart);
+        active_queue.push_back(pair<int,double>(vstart, getVertexByID(vstart).getWeight()));
         do {
-            vcurrent = active_queue.front();
+            pair<int, double> temp_pair = active_queue.front();
+            vcurrent = temp_pair.first;
             active_queue.pop_front();
             closed_set.push_front(vcurrent);
             // list of edges in current vertex
@@ -630,11 +631,12 @@ class Graph {
                     continue;
                 }
                 double w = getVertexByID(vcurrent).getWeight() + getVertexByID(vcurrent).getWeightbyId(vnext);
+                pair<int, double> vnext_pair = pair<int,double>(vnext, getVertexByID(vnext).getWeight());
                 // if does not exist in active_queue
-                if ((std::find(active_queue.begin(), active_queue.end(), vnext) == active_queue.end())) {
+                if ((std::find(active_queue.begin(), active_queue.end(), vnext_pair) == active_queue.end())) {
                     //getVertexByID(vnext).setWeight(w);
                     updateWeightVertex(vnext, w);
-                    active_queue.push_back(vnext);
+                    active_queue.push_back(pair<int,double>(vnext, getVertexByID(vnext).getWeight()));
                     path.push_front(pair<int,int>(vcurrent,vnext));
                     ++cpt;
                 }
@@ -642,24 +644,14 @@ class Graph {
                     //getVertexByID(vnext).setWeight(w);
                     updateWeightVertex(vnext, w);
                 }
+                /*
                 // the partial sort ensure that the vertex with the smallest w
                 // is the first on the active_queue
-                temp_sort.clear();
-                for (auto its = std::begin(active_queue); its != std::end(active_queue); ++its) {
-                    pair<int, double> elem;
-                    elem.first = *its;
-                    elem.second = getVertexByID(*its).getWeight();
-                    temp_sort.push_back(elem);
-                }
-                temp_sort.sort([](pair<int, double> a, pair<int, double> b)
+                active_queue.sort([](pair<int, double> a, pair<int, double> b)
                 {
                     return a.second < b.second;
                 });
-                active_queue.clear();
-                for (auto itt = std::begin(temp_sort); itt != std::end(temp_sort); ++itt) {
-                    pair<int,double> p = *itt;
-                    active_queue.push_back(p.first);
-                }
+                */
             }
         } while (active_queue.size()!=0);
         create_log(cpt, final_path);
