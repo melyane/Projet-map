@@ -38,7 +38,7 @@ void MainWindow::map(Graph g, list <int> V_path) {
     QPen pen(qRgb(255, 0, 0));
     QPen pen_path(qRgb(255, 215, 0));
     pen.setWidth(2);
-    pen_path.setWidth(3);
+    pen_path.setWidth(10);
 
     scene->setBackgroundBrush(Qt::black);
      for (int i = 0; i < int(VIdList.size()); i++) {
