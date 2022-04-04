@@ -131,7 +131,7 @@ int main(int argc, char *argv[])
 
     // second Dijkstra test
     start = std::chrono::steady_clock::now();
-    ve = graph.Dijkstra(73964, 272851);
+    ve = graph.Dijkstra(19791, 50179);
     end = std::chrono::steady_clock::now();
     elapsed_seconds = end - start;
     std::cout << "Dijkstra - elapsed time: " << elapsed_seconds.count() << " sec" << std::endl << std::endl;
